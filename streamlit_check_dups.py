@@ -1,14 +1,41 @@
 import streamlit as st
 from typing import List
-import random 
+import random
+
+
+# === Page Setup ===
+st.set_page_config(page_title="Contains Duplicate Visualizer", layout="wide")
+st.title("🔎 Contains Duplicate Visualizer")
+st.header("🧠 Problem: Contains Duplicate")
+
+
+# === Session State ===
+def_state = {
+    'step': 0,
+    'iter': 0,
+    'seen': set(),
+    'msg': '',
+    'done': False,
+    'current': None,
+    'skip_return_true': False
+}
+
+def init_session_state():
+    for k, v in def_state.items():
+        if k not in st.session_state:
+            st.session_state[k] = v
+    if 'nums' not in st.session_state:
+        st.session_state.nums = [1, 2, 3, 3]
+
+init_session_state()
 
 
 def reset_all():
     for k, v in def_state.items():
         st.session_state[k] = v
     st.session_state.nums = [1, 2, 3, 3]  # reset array
-        
-        
+
+
 def reset_partial():
     st.session_state.step = 0
     st.session_state.iter = 0
@@ -16,8 +43,9 @@ def reset_partial():
     st.session_state.current = None
     st.session_state.msg = ''
     st.session_state.done = False
-    
+
 # === Execution Logic ===
+
 def step_logic():
     step = st.session_state.step
     nums_list = st.session_state.nums
@@ -69,10 +97,8 @@ def step_logic():
         st.session_state.msg = "Returning False (no duplicates)."
         st.session_state.done = True
 
-# === Page Setup ===
-st.set_page_config(page_title="Contains Duplicate Visualizer", layout="wide")
-st.title("🔎 Contains Duplicate Visualizer")
-st.header("🧠 Problem: Contains Duplicate")
+
+
 
 # === Problem Description ===
 with st.container():
@@ -105,33 +131,18 @@ code_lines = [
 
 
 
-     
-# === Session State ===
-def_state = {
-    'step': 0,
-    'iter': 0,
-    'seen': set(),
-    'msg': '',
-    'done': False,
-    'current': None,
-    'skip_return_true': False
-}
-for k, v in def_state.items():
-    if k not in st.session_state:
-        st.session_state[k] = v
-
-
 
 # === Code Visualization ===
-st.subheader("💻 Code Execution - Hash Set Solution",divider='gray')
+st.subheader("💻 Code Execution - Hash Set Solution", divider='gray')
 
-# === Input Example ===
+# === Input Form ===
 # nums = [1, 2, 3, 3]
 with st.form("array_form"):
     st.subheader("🎛️ Generate Random Input")
     col1, col2, col3 = st.columns(3)
     with col1:
-        array_len = st.number_input("Length", min_value=1, max_value=100, value=5, step=1, key="len")
+        array_len = st.number_input(
+            "Length", min_value=1, max_value=100, value=5, step=1, key="len")
     with col2:
         min_val = st.number_input("Min Value", value=1, step=1, key="min")
     with col3:
@@ -139,20 +150,20 @@ with st.form("array_form"):
 
     submitted = st.form_submit_button("🎲 Generate Array")
 
-if 'nums' not in st.session_state:
-    st.session_state.nums = [1,2,3,3]
 
 if submitted:
     if min_val > max_val:
         st.warning("⚠️ Min value must be ≤ max value.")
     else:
-        st.session_state.nums = [random.randint(min_val, max_val) for _ in range(array_len)]
+        st.session_state.nums = [random.randint(
+            min_val, max_val) for _ in range(array_len)]
         reset_partial()
 # nums = st.session_state.nums
 
-### Display Generated Array
+# === Display Generated Array ===
 st.subheader(f"🔢 **Current Array**: `{st.session_state.nums}`")
 
+# === Code Visualization Layout ===
 with st.container():
     arrowed_code_block = ""
     for idx, line in enumerate(code_lines):
@@ -163,15 +174,15 @@ with st.container():
     code_col.code(arrowed_code_block, language="python")
 
     # info on the side
-    
+
     seen_display = (
-    "set()" if len(st.session_state.seen) == 0
-    else "{" + ", ".join(map(str, sorted(st.session_state.seen))) + "}"
+        "set()" if len(st.session_state.seen) == 0
+        else "{" + ", ".join(map(str, sorted(st.session_state.seen))) + "}"
     )
     info_col.markdown(f"**Seen Set**: `{seen_display}`")
     info_col.markdown(f"**Current num**: `{st.session_state.current}`")
     info_col.markdown(f"**Message**: {st.session_state.msg}")
-    
+
     # Hardcode but yea
     if st.session_state.done:
         if st.session_state.step == 4:
@@ -188,12 +199,14 @@ with st.container():
 # === Buttons ===
 done = st.session_state.done
 left, right = st.columns(2)
-left.button("▶️ Next Step", on_click=step_logic, disabled=done, use_container_width=True)
+left.button("▶️ Next Step", on_click=step_logic,
+            disabled=done, use_container_width=True)
 right.button("🔄 Reset", on_click=reset_all, use_container_width=True)
 
-# === Debug ===
+# === Debug info ===
 with st.expander("🛠 Debug Info"):
     st.write(st.session_state)
 
+# === Footer ===
 st.markdown("---")
 st.caption("Made with ❤️ by Wilfred Djumin")
