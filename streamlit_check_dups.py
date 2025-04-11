@@ -108,13 +108,13 @@ with st.container():
     **Example 1:**
     ```python
     Input : nums = [1,2,3,3]
-    Output: "3 is duplicated"
+    Output: True
     ```
 
     **Example 2:**
     ```python
     Input : nums = [1,2,3,4]
-    Output: "no duplicates"
+    Output: False
     ```
     """)
 
